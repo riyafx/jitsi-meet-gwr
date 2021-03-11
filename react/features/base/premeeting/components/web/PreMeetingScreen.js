@@ -112,10 +112,14 @@ export default class PreMeetingScreen extends PureComponent<Props> {
                             {showSharingButton ? <CopyMeetingUrl /> : null}
                         </>
                     )}
-                    {this.props.children}
-                    <div className="media-btn-container">
-                        <AudioSettingsButton visible={true} />
-                        <VideoSettingsButton visible={true} />
+                    { this.props.children }
+                    <div className = 'media-btn-container'>
+                        <div className = 'toolbox-content'>
+                            <div className = 'toolbox-content-items'>
+                                <AudioSettingsButton visible = { true } />
+                                <VideoSettingsButton visible = { true } />
+                            </div>
+                        </div>
                     </div>
                     {this.props.skipPrejoinButton}
                     {this.props.footer}
