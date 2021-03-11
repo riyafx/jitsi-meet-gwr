@@ -1,20 +1,20 @@
 /* @flow */
 
-import React, { Component } from 'react';
-import type { Dispatch } from 'redux';
+import React, { Component } from "react";
+import type { Dispatch } from "redux";
 
 import {
     createShortcutEvent,
     createToolbarEvent,
-    sendAnalytics
-} from '../../../analytics';
-import { translate } from '../../../base/i18n';
-import { Icon, IconMenuDown, IconMenuUp } from '../../../base/icons';
-import { connect } from '../../../base/redux';
-import { isButtonEnabled } from '../../../toolbox/functions.web';
-import { LAYOUTS, getCurrentLayout } from '../../../video-layout';
-import { setFilmstripVisible } from '../../actions';
-import { shouldRemoteVideosBeVisible } from '../../functions';
+    sendAnalytics,
+} from "../../../analytics";
+import { translate } from "../../../base/i18n";
+import { Icon, IconMenuDown, IconMenuUp } from "../../../base/icons";
+import { connect } from "../../../base/redux";
+import { isButtonEnabled } from "../../../toolbox/functions.web";
+import { LAYOUTS, getCurrentLayout } from "../../../video-layout";
+import { setFilmstripVisible } from "../../actions";
+import { shouldRemoteVideosBeVisible } from "../../functions";
 
 declare var APP: Object;
 declare var interfaceConfig: Object;
@@ -23,7 +23,6 @@ declare var interfaceConfig: Object;
  * The type of the React {@code Component} props of {@link Filmstrip}.
  */
 type Props = {
-
     /**
      * Additional CSS class names top add to the root.
      */
@@ -77,7 +76,7 @@ type Props = {
     /**
      * Invoked to obtain translated strings.
      */
-    t: Function
+    t: Function,
 };
 
 /**
@@ -86,8 +85,7 @@ type Props = {
  *
  * @extends Component
  */
-class Filmstrip extends Component <Props> {
-
+class Filmstrip extends Component<Props> {
     /**
      * Initializes a new {@code Filmstrip} instance.
      *
@@ -98,8 +96,12 @@ class Filmstrip extends Component <Props> {
         super(props);
 
         // Bind event handlers so they are only bound once for every instance.
-        this._onShortcutToggleFilmstrip = this._onShortcutToggleFilmstrip.bind(this);
-        this._onToolbarToggleFilmstrip = this._onToolbarToggleFilmstrip.bind(this);
+        this._onShortcutToggleFilmstrip = this._onShortcutToggleFilmstrip.bind(
+            this
+        );
+        this._onToolbarToggleFilmstrip = this._onToolbarToggleFilmstrip.bind(
+            this
+        );
     }
 
     /**
@@ -109,10 +111,10 @@ class Filmstrip extends Component <Props> {
      */
     componentDidMount() {
         APP.keyboardshortcut.registerShortcut(
-            'F',
-            'filmstripPopover',
+            "F",
+            "filmstripPopover",
             this._onShortcutToggleFilmstrip,
-            'keyboardShortcuts.toggleFilmstrip'
+            "keyboardShortcuts.toggleFilmstrip"
         );
     }
 
@@ -122,7 +124,7 @@ class Filmstrip extends Component <Props> {
      * @inheritdoc
      */
     componentWillUnmount() {
-        APP.keyboardshortcut.unregisterShortcut('F');
+        APP.keyboardshortcut.unregisterShortcut("F");
     }
 
     /**
@@ -139,67 +141,67 @@ class Filmstrip extends Component <Props> {
         // will get updated without replacing the DOM. If the known DOM gets
         // modified, then the views will get blown away.
 
-        const filmstripStyle = { };
+        const filmstripStyle = {};
         const filmstripRemoteVideosContainerStyle = {};
-        let remoteVideoContainerClassName = 'remote-videos-container';
+        let remoteVideoContainerClassName = "remote-videos-container";
 
         switch (this.props._currentLayout) {
-        case LAYOUTS.VERTICAL_FILMSTRIP_VIEW:
-            // Adding 18px for the 2px margins, 2px borders on the left and right and 5px padding on the left and right.
-            // Also adding 7px for the scrollbar.
-            filmstripStyle.maxWidth = (interfaceConfig.FILM_STRIP_MAX_HEIGHT || 120) + 25;
-            break;
-        case LAYOUTS.TILE_VIEW: {
-            // The size of the side margins for each tile as set in CSS.
-            const { _columns, _rows, _filmstripWidth } = this.props;
+            case LAYOUTS.VERTICAL_FILMSTRIP_VIEW:
+                // Adding 18px for the 2px margins, 2px borders on the left and right and 5px padding on the left and right.
+                // Also adding 7px for the scrollbar.
+                filmstripStyle.maxWidth =
+                    (interfaceConfig.FILM_STRIP_MAX_HEIGHT || 120) + 25;
+                break;
+            case LAYOUTS.TILE_VIEW: {
+                // The size of the side margins for each tile as set in CSS.
+                const { _columns, _rows, _filmstripWidth } = this.props;
 
-            if (_rows > _columns) {
-                remoteVideoContainerClassName += ' has-overflow';
+                if (_rows > _columns) {
+                    remoteVideoContainerClassName += " has-overflow";
+                }
+
+                filmstripRemoteVideosContainerStyle.width = _filmstripWidth;
+                break;
             }
-
-            filmstripRemoteVideosContainerStyle.width = _filmstripWidth;
-            break;
-        }
         }
 
-        let remoteVideosWrapperClassName = 'filmstrip__videos';
+        let remoteVideosWrapperClassName = "filmstrip__videos";
 
         if (this.props._hideScrollbar) {
-            remoteVideosWrapperClassName += ' hide-scrollbar';
+            remoteVideosWrapperClassName += " hide-scrollbar";
         }
 
         let toolbar = null;
 
-        if (!this.props._hideToolbar && isButtonEnabled('filmstrip')) {
+        if (!this.props._hideToolbar && isButtonEnabled("filmstrip")) {
             toolbar = this._renderToggleButton();
         }
 
         return (
             <div
-                className = { `filmstrip ${this.props._className}` }
-                style = { filmstripStyle }>
-                { toolbar }
-                <div
-                    className = { this.props._videosClassName }
-                    id = 'remoteVideos'>
-                    <div
-                        className = 'filmstrip__videos'
-                        id = 'filmstripLocalVideo'>
-                        <div id = 'filmstripLocalVideoThumbnail' />
+                className={`filmstrip ${this.props._className}`}
+                style={filmstripStyle}
+            >
+                {toolbar}
+                <div className={this.props._videosClassName} id="remoteVideos">
+                    <div className="filmstrip__videos" id="filmstripLocalVideo">
+                        <div id="filmstripLocalVideoThumbnail" />
                     </div>
                     <div
-                        className = { remoteVideosWrapperClassName }
-                        id = 'filmstripRemoteVideos'>
+                        className={remoteVideosWrapperClassName}
+                        id="filmstripRemoteVideos"
+                    >
                         {/*
-                          * XXX This extra video container is needed for
-                          * scrolling thumbnails in Firefox; otherwise, the flex
-                          * thumbnails resize instead of causing overflow.
-                          */}
+                         * XXX This extra video container is needed for
+                         * scrolling thumbnails in Firefox; otherwise, the flex
+                         * thumbnails resize instead of causing overflow.
+                         */}
                         <div
-                            className = { remoteVideoContainerClassName }
-                            id = 'filmstripRemoteVideosContainer'
-                            style = { filmstripRemoteVideosContainerStyle }>
-                            <div id = 'localVideoTileViewContainer' />
+                            className={remoteVideoContainerClassName}
+                            id="filmstripRemoteVideosContainer"
+                            style={filmstripRemoteVideosContainerStyle}
+                        >
+                            <div id="localVideoTileViewContainer" />
                         </div>
                     </div>
                 </div>
@@ -227,11 +229,11 @@ class Filmstrip extends Component <Props> {
      * @returns {void}
      */
     _onShortcutToggleFilmstrip() {
-        sendAnalytics(createShortcutEvent(
-            'toggle.filmstrip',
-            {
-                enable: this.props._visible
-            }));
+        sendAnalytics(
+            createShortcutEvent("toggle.filmstrip", {
+                enable: this.props._visible,
+            })
+        );
 
         this._doToggleFilmstrip();
     }
@@ -246,11 +248,11 @@ class Filmstrip extends Component <Props> {
      * @returns {void}
      */
     _onToolbarToggleFilmstrip() {
-        sendAnalytics(createToolbarEvent(
-            'toggle.filmstrip.button',
-            {
-                enable: this.props._visible
-            }));
+        sendAnalytics(
+            createToolbarEvent("toggle.filmstrip.button", {
+                enable: this.props._visible,
+            })
+        );
 
         this._doToggleFilmstrip();
     }
@@ -267,12 +269,13 @@ class Filmstrip extends Component <Props> {
         const { t } = this.props;
 
         return (
-            <div className = 'filmstrip__toolbar'>
+            <div className="filmstrip__toolbar">
                 <button
-                    aria-label = { t('toolbar.accessibilityLabel.toggleFilmstrip') }
-                    id = 'toggleFilmstripButton'
-                    onClick = { this._onToolbarToggleFilmstrip }>
-                    <Icon src = { icon } />
+                    aria-label={t("toolbar.accessibilityLabel.toggleFilmstrip")}
+                    id="toggleFilmstripButton"
+                    onClick={this._onToolbarToggleFilmstrip}
+                >
+                    <Icon src={icon} />
                 </button>
             </div>
         );
@@ -287,17 +290,20 @@ class Filmstrip extends Component <Props> {
  * @returns {Props}
  */
 function _mapStateToProps(state) {
-    const { iAmSipGateway } = state['features/base/config'];
-    const { visible } = state['features/filmstrip'];
-    const reduceHeight
-        = state['features/toolbox'].visible && interfaceConfig.TOOLBAR_BUTTONS.length;
+    const { iAmSipGateway } = state["features/base/config"];
+    const { visible } = state["features/filmstrip"];
+    const reduceHeight =
+        state["features/toolbox"].visible &&
+        interfaceConfig.TOOLBAR_BUTTONS.length;
     const remoteVideosVisible = shouldRemoteVideosBeVisible(state);
-    const { isOpen: shiftRight } = state['features/chat'];
-    const className = `${remoteVideosVisible ? '' : 'hide-videos'} ${
-        reduceHeight ? 'reduce-height' : ''
-    } ${shiftRight ? 'shift-right' : ''}`.trim();
-    const videosClassName = `filmstrip__videos${visible ? '' : ' hidden'}`;
-    const { gridDimensions = {}, filmstripWidth } = state['features/filmstrip'].tileViewDimensions;
+    const { isOpen: shiftRight } = state["features/chat"];
+    const className = `${remoteVideosVisible ? "" : "hide-videos"} ${
+        reduceHeight ? "reduce-height" : ""
+    } ${shiftRight ? "shift-right" : ""}`.trim();
+    const videosClassName = `filmstrip__videos${visible ? "" : " hidden"}`;
+    const { gridDimensions = {}, filmstripWidth } = state[
+        "features/filmstrip"
+    ].tileViewDimensions;
 
     return {
         _className: className,
@@ -308,7 +314,7 @@ function _mapStateToProps(state) {
         _hideToolbar: Boolean(iAmSipGateway),
         _rows: gridDimensions.rows,
         _videosClassName: videosClassName,
-        _visible: visible
+        _visible: visible,
     };
 }
 

@@ -1,22 +1,26 @@
 // @flow
 
-import { JitsiParticipantConnectionStatus } from '../base/lib-jitsi-meet';
-import { MEDIA_TYPE } from '../base/media';
+import { JitsiParticipantConnectionStatus } from "../base/lib-jitsi-meet";
+import { MEDIA_TYPE } from "../base/media";
 import {
     getLocalParticipant,
     getParticipantById,
     getParticipantCountWithFake,
-    getPinnedParticipant
-} from '../base/participants';
-import { toState } from '../base/redux';
+    getPinnedParticipant,
+} from "../base/participants";
+import { toState } from "../base/redux";
 import {
     getLocalVideoTrack,
     getTrackByMediaTypeAndParticipant,
     isLocalTrackMuted,
-    isRemoteTrackMuted
-} from '../base/tracks/functions';
+    isRemoteTrackMuted,
+} from "../base/tracks/functions";
 
-import { ASPECT_RATIO_BREAKPOINT, SQUARE_TILE_ASPECT_RATIO, TILE_ASPECT_RATIO } from './constants';
+import {
+    ASPECT_RATIO_BREAKPOINT,
+    SQUARE_TILE_ASPECT_RATIO,
+    TILE_ASPECT_RATIO,
+} from "./constants";
 
 declare var interfaceConfig: Object;
 
@@ -36,7 +40,7 @@ const TILE_VIEW_SIDE_MARGINS = 20;
  * @returns {boolean}
  */
 export function isFilmstripVisible(stateful: Object | Function) {
-    return toState(stateful)['features/filmstrip'].visible;
+    return toState(stateful)["features/filmstrip"].visible;
 }
 
 /**
@@ -48,7 +52,7 @@ export function isFilmstripVisible(stateful: Object | Function) {
  * in the filmstrip, then {@code true}; otherwise, {@code false}.
  */
 export function shouldRemoteVideosBeVisible(state: Object) {
-    if (state['features/invite'].calleeInfoVisible) {
+    if (state["features/invite"].calleeInfoVisible) {
         return false;
     }
 
@@ -59,16 +63,15 @@ export function shouldRemoteVideosBeVisible(state: Object) {
     let pinnedParticipant;
 
     return Boolean(
-        participantCount > 2
-
+        participantCount > 2 ||
             // Always show the filmstrip when there is another participant to
             // show and the  local video is pinned, or the toolbar is displayed.
-            || (participantCount > 1
-                && (state['features/toolbox'].visible
-                    || ((pinnedParticipant = getPinnedParticipant(state))
-                        && pinnedParticipant.local)))
-
-            || state['features/base/config'].disable1On1Mode);
+            (participantCount > 1 &&
+                (state["features/toolbox"].visible ||
+                    ((pinnedParticipant = getPinnedParticipant(state)) &&
+                        pinnedParticipant.local))) ||
+            state["features/base/config"].disable1On1Mode
+    );
 }
 
 /**
@@ -82,24 +85,31 @@ export function shouldRemoteVideosBeVisible(state: Object) {
  */
 export function isVideoPlayable(stateful: Object | Function, id: String) {
     const state = toState(stateful);
-    const tracks = state['features/base/tracks'];
-    const participant = id ? getParticipantById(state, id) : getLocalParticipant(state);
+    const tracks = state["features/base/tracks"];
+    const participant = id
+        ? getParticipantById(state, id)
+        : getLocalParticipant(state);
     const isLocal = participant?.local ?? true;
     const { connectionStatus } = participant || {};
-    const videoTrack
-        = isLocal ? getLocalVideoTrack(tracks) : getTrackByMediaTypeAndParticipant(tracks, MEDIA_TYPE.VIDEO, id);
-    const isAudioOnly = Boolean(state['features/base/audio-only'].enabled);
+    const videoTrack = isLocal
+        ? getLocalVideoTrack(tracks)
+        : getTrackByMediaTypeAndParticipant(tracks, MEDIA_TYPE.VIDEO, id);
+    const isAudioOnly = Boolean(state["features/base/audio-only"].enabled);
     let isPlayable = false;
 
     if (isLocal) {
         const isVideoMuted = isLocalTrackMuted(tracks, MEDIA_TYPE.VIDEO);
 
         isPlayable = Boolean(videoTrack) && !isVideoMuted && !isAudioOnly;
-    } else if (!participant?.isFakeParticipant) { // remote participants excluding shared video
+    } else if (!participant?.isFakeParticipant) {
+        // remote participants excluding shared video
         const isVideoMuted = isRemoteTrackMuted(tracks, MEDIA_TYPE.VIDEO, id);
 
-        isPlayable = Boolean(videoTrack) && !isVideoMuted && !isAudioOnly
-            && connectionStatus === JitsiParticipantConnectionStatus.ACTIVE;
+        isPlayable =
+            Boolean(videoTrack) &&
+            !isVideoMuted &&
+            !isAudioOnly &&
+            connectionStatus === JitsiParticipantConnectionStatus.ACTIVE;
     }
 
     return isPlayable;
@@ -111,20 +121,25 @@ export function isVideoPlayable(stateful: Object | Function, id: String) {
  * @param {number} clientHeight - The height of the app window.
  * @returns {{local: {height, width}, remote: {height, width}}}
  */
-export function calculateThumbnailSizeForHorizontalView(clientHeight: number = 0) {
+export function calculateThumbnailSizeForHorizontalView(
+    clientHeight: number = 0
+) {
     const topBottomMargin = 15;
-    const availableHeight = Math.min(clientHeight, (interfaceConfig.FILM_STRIP_MAX_HEIGHT || 120) + topBottomMargin);
+    const availableHeight = Math.min(
+        clientHeight,
+        (interfaceConfig.FILM_STRIP_MAX_HEIGHT || 120) + topBottomMargin
+    );
     const height = availableHeight - topBottomMargin;
 
     return {
         local: {
             height,
-            width: Math.floor(interfaceConfig.LOCAL_THUMBNAIL_RATIO * height)
+            width: Math.floor(interfaceConfig.LOCAL_THUMBNAIL_RATIO * height),
         },
         remote: {
             height,
-            width: Math.floor(interfaceConfig.REMOTE_THUMBNAIL_RATIO * height)
-        }
+            width: Math.floor(interfaceConfig.REMOTE_THUMBNAIL_RATIO * height),
+        },
     };
 }
 
@@ -139,7 +154,7 @@ export function calculateThumbnailSizeForTileView({
     visibleRows,
     clientWidth,
     clientHeight,
-    disableResponsiveTiles
+    disableResponsiveTiles,
 }: Object) {
     let aspectRatio = TILE_ASPECT_RATIO;
 
@@ -151,12 +166,14 @@ export function calculateThumbnailSizeForTileView({
     const viewHeight = clientHeight - TILE_VIEW_SIDE_MARGINS;
     const initialWidth = viewWidth / columns;
     const aspectRatioHeight = initialWidth / aspectRatio;
-    const height = Math.floor(Math.min(aspectRatioHeight, viewHeight / visibleRows));
+    const height = Math.floor(
+        Math.min(aspectRatioHeight, viewHeight / visibleRows)
+    );
     const width = Math.floor(aspectRatio * height);
 
     return {
         height,
-        width
+        width,
     };
 }
 
@@ -172,7 +189,8 @@ export function getVerticalFilmstripVisibleAreaWidth() {
     // TODO: Check if we can remove the left margins and paddings from the CSS.
     // FIXME: This function is used to calculate the size of the large video, etherpad or shared video. Once everything
     // is reactified this calculation will need to move to the corresponding components.
-    const filmstripMaxWidth = (interfaceConfig.FILM_STRIP_MAX_HEIGHT || 120) + 18;
+    const filmstripMaxWidth =
+        (interfaceConfig.FILM_STRIP_MAX_HEIGHT || 120) + 18;
 
     return Math.min(filmstripMaxWidth, window.innerWidth);
 }

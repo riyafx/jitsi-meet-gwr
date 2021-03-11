@@ -35,7 +35,7 @@
      */
     position: fixed;
     top: 0;
-    transition: height .3s ease-in;
+    transition: height 0.3s ease-in;
     right: 0;
     z-index: $filmstripVideosZ;
 
@@ -50,7 +50,7 @@
         @extend %align-right;
         bottom: 0;
         padding: 0;
-        position:relative;
+        position: relative;
         right: 0;
         width: auto;
 
@@ -88,9 +88,8 @@
             .videocontainer {
                 height: 0px;
                 width: 100%;
-    }
+            }
         }
-
     }
 
     /**
@@ -116,7 +115,9 @@
             @include minHWAutoFix();
             flex-direction: column-reverse;
             overflow: visible;
-            width: calc(100% - 8px); // 8px for margin + border of the thumbnails
+            width: calc(
+                100% - 8px
+            ); // 8px for margin + border of the thumbnails
 
             .videocontainer {
                 height: 0px;
@@ -169,7 +170,9 @@
     .vertical-filmstrip {
         #remoteVideos #filmstripRemoteVideos {
             #filmstripRemoteVideosContainer {
-                width: calc(100% - 15px) // 8 px - margins + border of the thumbnails; 7px - for the scroll
+                width: calc(
+                    100% - 15px
+                ); // 8 px - margins + border of the thumbnails; 7px - for the scroll
             }
         }
     }
@@ -182,6 +185,6 @@
 }
 
 /** Edge detection hack **/
-@supports (-ms-ime-align:auto) {
+@supports (-ms-ime-align: auto) {
     @include undoColumnReverseVideos();
 }

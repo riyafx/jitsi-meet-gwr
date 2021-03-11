@@ -19,7 +19,11 @@ var config = {
 
         // XMPP MUC domain. FIXME: use XEP-0030 to discover it.
         muc: 'conference.jitsi-meet.example.com'
+        bridge: 'jitsi-videobridge.jitsi.example.com',
+        focus: 'focus.jitsi.example.com'
     },
+    useNicks: false,
+
 
     // BOSH URL. FIXME: use XEP-0156 to discover it.
     bosh: '//jitsi-meet.example.com/http-bind',

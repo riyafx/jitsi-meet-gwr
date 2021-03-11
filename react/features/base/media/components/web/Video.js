@@ -1,12 +1,11 @@
 /* @flow */
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 /**
  * The type of the React {@code Component} props of {@link Video}.
  */
 type Props = {
-
     /**
      * CSS classes to add to the video element.
      */
@@ -38,7 +37,7 @@ type Props = {
      * Used to determine the value of the autoplay attribute of the underlying
      * video element.
      */
-    playsinline: boolean
+    playsinline: boolean,
 };
 
 /**
@@ -55,10 +54,10 @@ class Video extends Component<Props> {
      * @static
      */
     static defaultProps = {
-        className: '',
+        className: "",
         autoPlay: true,
-        id: '',
-        playsinline: true
+        id: "",
+        playsinline: true,
     };
 
     /**
@@ -78,7 +77,6 @@ class Video extends Component<Props> {
          * @type {HTMLVideoElement}
          */
         this._videoElement = null;
-
 
         // Bind event handlers so they are only bound once for every instance.
         this._onVideoPlaying = this._onVideoPlaying.bind(this);
@@ -129,10 +127,10 @@ class Video extends Component<Props> {
      * from React.
      */
     shouldComponentUpdate(nextProps: Props) {
-        const currentJitsiTrack = this.props.videoTrack
-            && this.props.videoTrack.jitsiTrack;
-        const nextJitsiTrack = nextProps.videoTrack
-            && nextProps.videoTrack.jitsiTrack;
+        const currentJitsiTrack =
+            this.props.videoTrack && this.props.videoTrack.jitsiTrack;
+        const nextJitsiTrack =
+            nextProps.videoTrack && nextProps.videoTrack.jitsiTrack;
 
         if (currentJitsiTrack !== nextJitsiTrack) {
             this._detachTrack(this.props.videoTrack);
@@ -151,11 +149,12 @@ class Video extends Component<Props> {
     render() {
         return (
             <video
-                autoPlay = { this.props.autoPlay }
-                className = { this.props.className }
-                id = { this.props.id }
-                playsInline = { this.props.playsinline }
-                ref = { this._setVideoElement } />
+                autoPlay={this.props.autoPlay}
+                className={this.props.className}
+                id={this.props.id}
+                playsInline={this.props.playsinline}
+                ref={this._setVideoElement}
+            />
         );
     }
 

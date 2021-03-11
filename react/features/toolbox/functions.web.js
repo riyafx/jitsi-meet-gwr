@@ -1,6 +1,6 @@
 // @flow
 
-import { hasAvailableDevices } from '../base/devices';
+import { hasAvailableDevices } from "../base/devices";
 
 declare var interfaceConfig: Object;
 
@@ -10,7 +10,8 @@ declare var interfaceConfig: Object;
  * @returns {number} The height of the toolbox.
  */
 export function getToolboxHeight() {
-    const toolbox = document.getElementById('new-toolbox');
+    const toolbox = document.getElementById("new-toolbox");
+    console.log("toolbox", toolbox, toolbox.clientHeight);
 
     return (toolbox && toolbox.clientHeight) || 0;
 }
@@ -25,13 +26,15 @@ export function getToolboxHeight() {
  * undefined is returned.
  */
 export function isButtonEnabled(name: string) {
-    if (typeof interfaceConfig === 'object' && Array.isArray(interfaceConfig.TOOLBAR_BUTTONS)) {
+    if (
+        typeof interfaceConfig === "object" &&
+        Array.isArray(interfaceConfig.TOOLBAR_BUTTONS)
+    ) {
         return interfaceConfig.TOOLBAR_BUTTONS.indexOf(name) !== -1;
     }
 
     return undefined;
 }
-
 
 /**
  * Indicates if the toolbox is visible or not.
@@ -41,16 +44,20 @@ export function isButtonEnabled(name: string) {
  * otherwise.
  */
 export function isToolboxVisible(state: Object) {
-    const { iAmSipGateway } = state['features/base/config'];
-    const {
-        alwaysVisible,
-        timeoutID,
-        visible
-    } = state['features/toolbox'];
-    const { audioSettingsVisible, videoSettingsVisible } = state['features/settings'];
+    const { iAmSipGateway } = state["features/base/config"];
+    const { alwaysVisible, timeoutID, visible } = state["features/toolbox"];
+    const { audioSettingsVisible, videoSettingsVisible } = state[
+        "features/settings"
+    ];
 
-    return Boolean(!iAmSipGateway && (timeoutID || visible || alwaysVisible
-                                      || audioSettingsVisible || videoSettingsVisible));
+    return Boolean(
+        !iAmSipGateway &&
+            (timeoutID ||
+                visible ||
+                alwaysVisible ||
+                audioSettingsVisible ||
+                videoSettingsVisible)
+    );
 }
 
 /**
@@ -60,9 +67,11 @@ export function isToolboxVisible(state: Object) {
  * @returns {boolean}
  */
 export function isAudioSettingsButtonDisabled(state: Object) {
-    return (!hasAvailableDevices(state, 'audioInput')
-          && !hasAvailableDevices(state, 'audioOutput'))
-          || state['features/base/config'].startSilent;
+    return (
+        (!hasAvailableDevices(state, "audioInput") &&
+            !hasAvailableDevices(state, "audioOutput")) ||
+        state["features/base/config"].startSilent
+    );
 }
 
 /**
@@ -72,7 +81,7 @@ export function isAudioSettingsButtonDisabled(state: Object) {
  * @returns {boolean}
  */
 export function isVideoSettingsButtonDisabled(state: Object) {
-    return !hasAvailableDevices(state, 'videoInput');
+    return !hasAvailableDevices(state, "videoInput");
 }
 
 /**
@@ -82,5 +91,5 @@ export function isVideoSettingsButtonDisabled(state: Object) {
  * @returns {boolean}
  */
 export function isVideoMuteButtonDisabled(state: Object) {
-    return !hasAvailableDevices(state, 'videoInput');
+    return !hasAvailableDevices(state, "videoInput");
 }

@@ -1,17 +1,19 @@
 // @flow
 
-import React, { PureComponent } from 'react';
+import React, { PureComponent } from "react";
 
-import { AudioSettingsButton, VideoSettingsButton } from '../../../../toolbox/components/web';
-import { Avatar } from '../../../avatar';
-import { allowUrlSharing } from '../../functions';
+import {
+    AudioSettingsButton,
+    VideoSettingsButton,
+} from "../../../../toolbox/components/web";
+import { Avatar } from "../../../avatar";
+import { allowUrlSharing } from "../../functions";
 
-import ConnectionStatus from './ConnectionStatus';
-import CopyMeetingUrl from './CopyMeetingUrl';
-import Preview from './Preview';
+import ConnectionStatus from "./ConnectionStatus";
+import CopyMeetingUrl from "./CopyMeetingUrl";
+import Preview from "./Preview";
 
 type Props = {
-
     /**
      * Children component(s) to be rendered on the screen.
      */
@@ -45,7 +47,7 @@ type Props = {
     /**
      * The 'Skip prejoin' button to be rendered (if any).
      */
-     skipPrejoinButton?: React$Node,
+    skipPrejoinButton?: React$Node,
 
     /**
      * True if the preview overlay should be muted, false otherwise.
@@ -55,8 +57,8 @@ type Props = {
     /**
      * The video track to render as preview (if omitted, the default local track will be rendered).
      */
-    videoTrack?: Object
-}
+    videoTrack?: Object,
+};
 
 /**
  * Implements a pre-meeting screen that can be used at various pre-meeting phases, for example
@@ -70,7 +72,7 @@ export default class PreMeetingScreen extends PureComponent<Props> {
      */
     static defaultProps = {
         showAvatar: true,
-        showConferenceInfo: true
+        showConferenceInfo: true,
     };
 
     /**
@@ -79,42 +81,44 @@ export default class PreMeetingScreen extends PureComponent<Props> {
      * @inheritdoc
      */
     render() {
-        const { name, showAvatar, showConferenceInfo, title, videoMuted, videoTrack } = this.props;
+        const {
+            name,
+            showAvatar,
+            showConferenceInfo,
+            title,
+            videoMuted,
+            videoTrack,
+        } = this.props;
         const showSharingButton = allowUrlSharing();
 
         return (
-            <div
-                className = 'premeeting-screen'
-                id = 'lobby-screen'>
+            <div className="premeeting-screen" id="lobby-screen">
                 <ConnectionStatus />
-                <Preview
-                    videoMuted = { videoMuted }
-                    videoTrack = { videoTrack } />
-                {!videoMuted && <div className = 'preview-overlay' />}
-                <div className = 'content'>
+                <Preview videoMuted={videoMuted} videoTrack={videoTrack} />
+                {!videoMuted && <div className="preview-overlay" />}
+                <div className="content">
                     {showAvatar && videoMuted && (
                         <Avatar
-                            className = 'premeeting-screen-avatar'
-                            displayName = { name }
-                            dynamicColor = { false }
-                            participantId = 'local'
-                            size = { 80 } />
+                            className="premeeting-screen-avatar"
+                            displayName={name}
+                            dynamicColor={false}
+                            participantId="local"
+                            size={80}
+                        />
                     )}
                     {showConferenceInfo && (
                         <>
-                            <div className = 'title'>
-                                { title }
-                            </div>
+                            <div className="title">{title}</div>
                             {showSharingButton ? <CopyMeetingUrl /> : null}
                         </>
                     )}
-                    { this.props.children }
-                    <div className = 'media-btn-container'>
-                        <AudioSettingsButton visible = { true } />
-                        <VideoSettingsButton visible = { true } />
+                    {this.props.children}
+                    <div className="media-btn-container">
+                        <AudioSettingsButton visible={true} />
+                        <VideoSettingsButton visible={true} />
                     </div>
-                    { this.props.skipPrejoinButton }
-                    { this.props.footer }
+                    {this.props.skipPrejoinButton}
+                    {this.props.footer}
                 </div>
             </div>
         );

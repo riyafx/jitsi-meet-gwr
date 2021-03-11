@@ -1,23 +1,23 @@
 /* global APP  */
 
-import Logger from 'jitsi-meet-logger';
+import Logger from "jitsi-meet-logger";
 
-import { MEDIA_TYPE, VIDEO_TYPE } from '../../../react/features/base/media';
+import { MEDIA_TYPE, VIDEO_TYPE } from "../../../react/features/base/media";
 import {
     getLocalParticipant as getLocalParticipantFromStore,
     getPinnedParticipant,
     getParticipantById,
-    pinParticipant
-} from '../../../react/features/base/participants';
-import { getTrackByMediaTypeAndParticipant } from '../../../react/features/base/tracks';
-import UIEvents from '../../../service/UI/UIEvents';
-import { SHARED_VIDEO_CONTAINER_TYPE } from '../shared_video/SharedVideo';
-import SharedVideoThumb from '../shared_video/SharedVideoThumb';
+    pinParticipant,
+} from "../../../react/features/base/participants";
+import { getTrackByMediaTypeAndParticipant } from "../../../react/features/base/tracks";
+import UIEvents from "../../../service/UI/UIEvents";
+import { SHARED_VIDEO_CONTAINER_TYPE } from "../shared_video/SharedVideo";
+import SharedVideoThumb from "../shared_video/SharedVideoThumb";
 
-import LargeVideoManager from './LargeVideoManager';
-import LocalVideo from './LocalVideo';
-import RemoteVideo from './RemoteVideo';
-import { VIDEO_CONTAINER_TYPE } from './VideoContainer';
+import LargeVideoManager from "./LargeVideoManager";
+import LocalVideo from "./LocalVideo";
+import RemoteVideo from "./RemoteVideo";
+import { VIDEO_CONTAINER_TYPE } from "./VideoContainer";
 
 const logger = Logger.getLogger(__filename);
 
@@ -52,8 +52,8 @@ function onLocalFlipXChanged(val) {
  */
 function getAllThumbnails() {
     return [
-        ...localVideoThumbnail ? [ localVideoThumbnail ] : [],
-        ...Object.values(remoteVideos)
+        ...(localVideoThumbnail ? [localVideoThumbnail] : []),
+        ...Object.values(remoteVideos),
     ];
 }
 
@@ -73,7 +73,8 @@ const VideoLayout = {
 
         localVideoThumbnail = new LocalVideo(
             emitter,
-            this._updateLargeVideoIfDisplayed.bind(this));
+            this._updateLargeVideoIfDisplayed.bind(this)
+        );
 
         this.registerListeners();
     },
@@ -84,8 +85,10 @@ const VideoLayout = {
      * @returns {void}
      */
     registerListeners() {
-        eventEmitter.addListener(UIEvents.LOCAL_FLIPX_CHANGED,
-            onLocalFlipXChanged);
+        eventEmitter.addListener(
+            UIEvents.LOCAL_FLIPX_CHANGED,
+            onLocalFlipXChanged
+        );
     },
 
     /**
@@ -145,7 +148,7 @@ const VideoLayout = {
         logger.debug(`Received a new ${stream.getType()} stream for ${id}`);
 
         if (!remoteVideo) {
-            logger.debug('No remote video element to add stream');
+            logger.debug("No remote video element to add stream");
 
             return;
         }
@@ -179,7 +182,7 @@ const VideoLayout = {
     updateVideoMutedForNoTracks(participantId) {
         const participant = APP.conference.getParticipantById(participantId);
 
-        if (participant && !participant.getTracksByMediaType('video').length) {
+        if (participant && !participant.getTracksByMediaType("video").length) {
             APP.UI.setVideoMuted(participantId);
         }
     },
@@ -197,7 +200,11 @@ const VideoLayout = {
             return SHARED_VIDEO_CONTAINER_TYPE;
         }
 
-        const videoTrack = getTrackByMediaTypeAndParticipant(state['features/base/tracks'], MEDIA_TYPE.VIDEO, id);
+        const videoTrack = getTrackByMediaTypeAndParticipant(
+            state["features/base/tracks"],
+            MEDIA_TYPE.VIDEO,
+            id
+        );
 
         return videoTrack?.videoType;
     },
@@ -233,8 +240,9 @@ const VideoLayout = {
      * @returns {void}
      */
     onPinChange(pinnedParticipantID) {
-        getAllThumbnails().forEach(thumbnail =>
-            thumbnail.focus(pinnedParticipantID === thumbnail.getId()));
+        getAllThumbnails().forEach((thumbnail) =>
+            thumbnail.focus(pinnedParticipantID === thumbnail.getId())
+        );
     },
 
     /**
@@ -302,8 +310,9 @@ const VideoLayout = {
      * @returns {void}
      */
     onDominantSpeakerChanged(id) {
-        getAllThumbnails().forEach(thumbnail =>
-            thumbnail.showDominantSpeakerIndicator(id === thumbnail.getId()));
+        getAllThumbnails().forEach((thumbnail) =>
+            thumbnail.showDominantSpeakerIndicator(id === thumbnail.getId())
+        );
     },
 
     /**
@@ -314,7 +323,6 @@ const VideoLayout = {
      */
     onParticipantConnectionStatusChanged(id) {
         if (APP.conference.isLocalId(id)) {
-
             return;
         }
 
@@ -338,6 +346,12 @@ const VideoLayout = {
      * endpoints
      */
     onLastNEndpointsChanged(endpointsLeavingLastN, endpointsEnteringLastN) {
+        console.log(
+            "endpointsLeavingLastN",
+            endpointsLeavingLastN,
+            endpointsEnteringLastN
+        );
+
         if (endpointsLeavingLastN) {
             endpointsLeavingLastN.forEach(this._updateRemoteVideo, this);
         }
@@ -364,7 +378,7 @@ const VideoLayout = {
     removeParticipantContainer(id) {
         // Unlock large video
         if (this.getPinnedId() === id) {
-            logger.info('Focused video owner has left the conference');
+            logger.info("Focused video owner has left the conference");
             APP.store.dispatch(pinParticipant(null));
         }
 
@@ -387,7 +401,7 @@ const VideoLayout = {
             return;
         }
 
-        logger.info('Peer video type changed: ', id, newVideoType);
+        logger.info("Peer video type changed: ", id, newVideoType);
         remoteVideo.updateView();
     },
 
@@ -407,7 +421,6 @@ const VideoLayout = {
         }
 
         return remoteVideos[id];
-
     },
 
     changeUserAvatar(id, avatarUrl) {
@@ -445,7 +458,7 @@ const VideoLayout = {
             this.updateLargeVideo(displayedUserId, true);
         }
 
-        Object.keys(remoteVideos).forEach(video => {
+        Object.keys(remoteVideos).forEach((video) => {
             remoteVideos[video].updateView();
         });
     },
@@ -458,18 +471,25 @@ const VideoLayout = {
         const currentContainerType = largeVideo.getCurrentContainerType();
         const isOnLarge = this.isCurrentlyOnLarge(id);
         const state = APP.store.getState();
-        const videoTrack = getTrackByMediaTypeAndParticipant(state['features/base/tracks'], MEDIA_TYPE.VIDEO, id);
+        const videoTrack = getTrackByMediaTypeAndParticipant(
+            state["features/base/tracks"],
+            MEDIA_TYPE.VIDEO,
+            id
+        );
         const videoStream = videoTrack?.jitsiTrack;
 
-        if (isOnLarge && !forceUpdate
-                && LargeVideoManager.isVideoContainer(currentContainerType)
-                && videoStream) {
+        if (
+            isOnLarge &&
+            !forceUpdate &&
+            LargeVideoManager.isVideoContainer(currentContainerType) &&
+            videoStream
+        ) {
             const currentStreamId = currentContainer.getStreamID();
             const newStreamId = videoStream?.getId() || null;
 
             // FIXME it might be possible to get rid of 'forceUpdate' argument
             if (currentStreamId !== newStreamId) {
-                logger.debug('Enforcing large video update for stream change');
+                logger.debug("Enforcing large video update for stream change");
                 forceUpdate = true; // eslint-disable-line no-param-reassign
             }
         }
@@ -477,14 +497,15 @@ const VideoLayout = {
         if (!isOnLarge || forceUpdate) {
             const videoType = this.getRemoteVideoType(id);
 
-
-            largeVideo.updateLargeVideo(
-                id,
-                videoStream,
-                videoType || VIDEO_TYPE.CAMERA
-            ).catch(() => {
-                // do nothing
-            });
+            largeVideo
+                .updateLargeVideo(
+                    id,
+                    videoStream,
+                    videoType || VIDEO_TYPE.CAMERA
+                )
+                .catch(() => {
+                    // do nothing
+                });
         }
     },
 
@@ -533,12 +554,11 @@ const VideoLayout = {
             }
         }
 
-        return largeVideo.showContainer(containerTypeToShow)
-            .then(() => {
-                if (oldSmallVideo) {
-                    oldSmallVideo && oldSmallVideo.updateView();
-                }
-            });
+        return largeVideo.showContainer(containerTypeToShow).then(() => {
+            if (oldSmallVideo) {
+                oldSmallVideo && oldSmallVideo.updateView();
+            }
+        });
     },
 
     isLargeContainerTypeVisible(type) {
@@ -598,7 +618,9 @@ const VideoLayout = {
 
         // Rerender the thumbnails since they are dependant on the layout because of the tooltip positioning.
         localVideoThumbnail && localVideoThumbnail.rerender();
-        Object.values(remoteVideos).forEach(remoteVideoThumbnail => remoteVideoThumbnail.rerender());
+        Object.values(remoteVideos).forEach((remoteVideoThumbnail) =>
+            remoteVideoThumbnail.rerender()
+        );
     },
 
     /**
@@ -624,7 +646,7 @@ const VideoLayout = {
      * @returns {void}
      */
     _resetFilmstrip() {
-        Object.keys(remoteVideos).forEach(remoteVideoId => {
+        Object.keys(remoteVideos).forEach((remoteVideoId) => {
             this.removeParticipantContainer(remoteVideoId);
             delete remoteVideos[remoteVideoId];
         });
@@ -656,7 +678,7 @@ const VideoLayout = {
      */
     onResize() {
         VideoLayout.resizeVideoArea();
-    }
+    },
 };
 
 export default VideoLayout;
