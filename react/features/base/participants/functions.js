@@ -1,20 +1,20 @@
 // @flow
 
-import { getGravatarURL } from '@jitsi/js-utils/avatar';
-import type { Store } from 'redux';
+import { getGravatarURL } from "@jitsi/js-utils/avatar";
+import type { Store } from "redux";
 
-import { JitsiParticipantConnectionStatus } from '../lib-jitsi-meet';
-import { MEDIA_TYPE, shouldRenderVideoTrack } from '../media';
-import { toState } from '../redux';
-import { getTrackByMediaTypeAndParticipant } from '../tracks';
-import { createDeferred } from '../util';
+import { JitsiParticipantConnectionStatus } from "../lib-jitsi-meet";
+import { MEDIA_TYPE, shouldRenderVideoTrack } from "../media";
+import { toState } from "../redux";
+import { getTrackByMediaTypeAndParticipant } from "../tracks";
+import { createDeferred } from "../util";
 
 import {
     JIGASI_PARTICIPANT_ICON,
     MAX_DISPLAY_NAME_LENGTH,
-    PARTICIPANT_ROLE
-} from './constants';
-import { preloadImage } from './preloadImage';
+    PARTICIPANT_ROLE,
+} from "./constants";
+import { preloadImage } from "./preloadImage";
 
 declare var interfaceConfig: Object;
 
@@ -26,22 +26,27 @@ const AVATAR_CHECKED_URLS = new Map();
 /* eslint-disable arrow-body-style, no-unused-vars */
 const AVATAR_CHECKER_FUNCTIONS = [
     (participant, _) => {
-        return participant && participant.isJigasi ? JIGASI_PARTICIPANT_ICON : null;
+        return participant && participant.isJigasi
+            ? JIGASI_PARTICIPANT_ICON
+            : null;
     },
     (participant, _) => {
-        return participant && participant.avatarURL ? participant.avatarURL : null;
+        return participant && participant.avatarURL
+            ? participant.avatarURL
+            : null;
     },
     (participant, store) => {
         if (participant && participant.email) {
             // TODO: remove once libravatar has deployed their new scaled up infra. -saghul
-            const gravatarBaseURL
-                = store.getState()['features/base/config'].gravatarBaseURL ?? 'https://www.gravatar.com/avatar/';
+            const gravatarBaseURL =
+                store.getState()["features/base/config"].gravatarBaseURL ??
+                "https://www.gravatar.com/avatar/";
 
             return getGravatarURL(participant.email, gravatarBaseURL);
         }
 
         return null;
-    }
+    },
 ];
 /* eslint-enable arrow-body-style, no-unused-vars */
 
@@ -52,12 +57,14 @@ const AVATAR_CHECKER_FUNCTIONS = [
  * @param {Store} store - Redux store.
  * @returns {Promise}
  */
-export function getFirstLoadableAvatarUrl(participant: Object, store: Store<any, any>) {
+export function getFirstLoadableAvatarUrl(
+    participant: Object,
+    store: Store<any, any>
+) {
     const deferred = createDeferred();
     const fullPromise = deferred.promise
         .then(() => _getFirstLoadableAvatarUrl(participant, store))
-        .then(src => {
-
+        .then((src) => {
             if (AVATAR_QUEUE.length) {
                 const next = AVATAR_QUEUE.shift();
 
@@ -88,7 +95,7 @@ export function getFirstLoadableAvatarUrl(participant: Object, store: Store<any,
 export function getLocalParticipant(stateful: Object | Function) {
     const participants = _getAllParticipants(stateful);
 
-    return participants.find(p => p.local);
+    return participants.find((p) => p.local);
 }
 
 /**
@@ -118,10 +125,12 @@ export function getNormalizedDisplayName(name: string) {
  * @returns {(Participant|undefined)}
  */
 export function getParticipantById(
-        stateful: Object | Function, id: string): ?Object {
+    stateful: Object | Function,
+    id: string
+): ?Object {
     const participants = _getAllParticipants(stateful);
 
-    return participants.find(p => p.id === id);
+    return participants.find((p) => p.id === id);
 }
 
 /**
@@ -164,8 +173,9 @@ export function getParticipantCountWithFake(stateful: Object | Function) {
  * @returns {string}
  */
 export function getParticipantDisplayName(
-        stateful: Object | Function,
-        id: string) {
+    stateful: Object | Function,
+    id: string
+) {
     const participant = getParticipantById(stateful, id);
 
     if (participant) {
@@ -174,15 +184,15 @@ export function getParticipantDisplayName(
         }
 
         if (participant.local) {
-            return typeof interfaceConfig === 'object'
+            return typeof interfaceConfig === "object"
                 ? interfaceConfig.DEFAULT_LOCAL_DISPLAY_NAME
-                : 'me';
+                : "me";
         }
     }
 
-    return typeof interfaceConfig === 'object'
+    return typeof interfaceConfig === "object"
         ? interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME
-        : 'Fellow Jitster';
+        : "Fellow Jitster";
 }
 
 /**
@@ -194,7 +204,9 @@ export function getParticipantDisplayName(
  * @returns {string} - The presence status.
  */
 export function getParticipantPresenceStatus(
-        stateful: Object | Function, id: string) {
+    stateful: Object | Function,
+    id: string
+) {
     if (!id) {
         return undefined;
     }
@@ -218,7 +230,7 @@ export function getParticipantPresenceStatus(
  * @returns {Participant[]}
  */
 export function getParticipants(stateful: Object | Function) {
-    return _getAllParticipants(stateful).filter(p => !p.isFakeParticipant);
+    return _getAllParticipants(stateful).filter((p) => !p.isFakeParticipant);
 }
 
 /**
@@ -231,7 +243,7 @@ export function getParticipants(stateful: Object | Function) {
  * @returns {(Participant|undefined)}
  */
 export function getPinnedParticipant(stateful: Object | Function) {
-    return _getAllParticipants(stateful).find(p => p.pinned);
+    return _getAllParticipants(stateful).find((p) => p.pinned);
 }
 
 /**
@@ -245,10 +257,9 @@ export function getPinnedParticipant(stateful: Object | Function) {
  * @returns {Participant[]}
  */
 function _getAllParticipants(stateful) {
-    return (
-        Array.isArray(stateful)
-            ? stateful
-            : toState(stateful)['features/base/participants'] || []);
+    return Array.isArray(stateful)
+        ? stateful
+        : toState(stateful)["features/base/participants"] || [];
 }
 
 /**
@@ -265,7 +276,7 @@ function _getAllParticipants(stateful) {
 export function getYoutubeParticipant(stateful: Object | Function) {
     const participants = _getAllParticipants(stateful);
 
-    return participants.filter(p => p.isFakeParticipant)[0];
+    return participants.filter((p) => p.isFakeParticipant)[0];
 }
 
 /**
@@ -298,7 +309,10 @@ export function isEveryoneModerator(stateful: Object | Function) {
  * @returns {boolean}
  */
 export function isIconUrl(icon: ?string | ?Object) {
-    return Boolean(icon) && (typeof icon === 'object' || typeof icon === 'function');
+    return (
+        Boolean(icon) &&
+        (typeof icon === "object" || typeof icon === "function")
+    );
 }
 
 /**
@@ -329,7 +343,10 @@ export function isLocalParticipantModerator(stateful: Object | Function) {
  * @param {string} id - The ID of the participant.
  * @returns {boolean}
  */
-export function shouldRenderParticipantVideo(stateful: Object | Function, id: string) {
+export function shouldRenderParticipantVideo(
+    stateful: Object | Function,
+    id: string
+) {
     const state = toState(stateful);
     const participant = getParticipantById(state, id);
 
@@ -338,32 +355,38 @@ export function shouldRenderParticipantVideo(stateful: Object | Function, id: st
     }
 
     /* First check if we have an unmuted video track. */
-    const videoTrack
-        = getTrackByMediaTypeAndParticipant(state['features/base/tracks'], MEDIA_TYPE.VIDEO, id);
+    const videoTrack = getTrackByMediaTypeAndParticipant(
+        state["features/base/tracks"],
+        MEDIA_TYPE.VIDEO,
+        id
+    );
 
     if (!shouldRenderVideoTrack(videoTrack, /* waitForVideoStarted */ false)) {
         return false;
     }
 
     /* Then check if the participant connection is active. */
-    const connectionStatus = participant.connectionStatus || JitsiParticipantConnectionStatus.ACTIVE;
+    const connectionStatus =
+        participant.connectionStatus || JitsiParticipantConnectionStatus.ACTIVE;
 
     if (connectionStatus !== JitsiParticipantConnectionStatus.ACTIVE) {
         return false;
     }
 
     /* Then check if audio-only mode is not active. */
-    const audioOnly = state['features/base/audio-only'].enabled;
+    const audioOnly = state["features/base/audio-only"].enabled;
 
     if (!audioOnly) {
         return true;
     }
 
     /* Last, check if the participant is sharing their screen and they are on stage. */
-    const remoteScreenShares = state['features/video-layout'].remoteScreenShares || [];
-    const largeVideoParticipantId = state['features/large-video'].participantId;
-    const participantIsInLargeVideoWithScreen
-        = participant.id === largeVideoParticipantId && remoteScreenShares.includes(participant.id);
+    const remoteScreenShares =
+        state["features/video-layout"].remoteScreenShares || [];
+    const largeVideoParticipantId = state["features/large-video"].participantId;
+    const participantIsInLargeVideoWithScreen =
+        participant.id === largeVideoParticipantId &&
+        remoteScreenShares.includes(participant.id);
 
     return participantIsInLargeVideoWithScreen;
 }

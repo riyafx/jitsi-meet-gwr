@@ -8,6 +8,7 @@ import { InviteMore, Subject } from "../../conference";
 import { fetchCustomBrandingData } from "../../dynamic-branding";
 import { Captions } from "../../subtitles/";
 import CountDown from "./CountDown.web";
+import Clock from "react-live-clock";
 
 declare var interfaceConfig: Object;
 
@@ -79,6 +80,19 @@ class LargeVideo extends Component<Props> {
 
                 <Watermarks />
                 <CountDown />
+                <Clock
+                    format={"HH:mm:ss"}
+                    ticking={true}
+                    timezone={"Africa/Abidjan"}
+                    style={{
+                        fontSize: "3em",
+                        position: "absolute",
+                        zIndex: 100,
+                        top: "17%",
+                        left: "45%",
+                        fontColor: "#ffff",
+                    }}
+                />
 
                 <div id="dominantSpeaker">
                     <div className="dynamic-shadow" />

@@ -6,17 +6,17 @@ import type { Dispatch } from "redux";
 import {
     createShortcutEvent,
     createToolbarEvent,
-    sendAnalytics
-} from '../../../analytics';
-import { getToolbarButtons } from '../../../base/config';
-import { translate } from '../../../base/i18n';
-import { Icon, IconMenuDown, IconMenuUp } from '../../../base/icons';
-import { connect } from '../../../base/redux';
-import { isButtonEnabled } from '../../../toolbox/functions.web';
-import { LAYOUTS, getCurrentLayout } from '../../../video-layout';
-import { setFilmstripVisible } from '../../actions';
-import { shouldRemoteVideosBeVisible } from '../../functions';
-
+    sendAnalytics,
+} from "../../../analytics";
+import { getToolbarButtons } from "../../../base/config";
+import { translate } from "../../../base/i18n";
+import { Icon, IconMenuDown, IconMenuUp } from "../../../base/icons";
+import { isLocalParticipantModerator } from "../../../base/participants";
+import { connect } from "../../../base/redux";
+import { isButtonEnabled } from "../../../toolbox/functions.web";
+import { LAYOUTS, getCurrentLayout } from "../../../video-layout";
+import { setFilmstripVisible } from "../../actions";
+import { shouldRemoteVideosBeVisible } from "../../functions";
 
 declare var APP: Object;
 declare var interfaceConfig: Object;
@@ -180,7 +180,6 @@ class Filmstrip extends Component<Props> {
 
         let toolbar = null;
 
-
         if (!this.props._hideToolbar && this.props._isFilmstripButtonEnabled) {
             toolbar = this._renderToggleButton();
         }
@@ -195,23 +194,27 @@ class Filmstrip extends Component<Props> {
                     <div className="filmstrip__videos" id="filmstripLocalVideo">
                         <div id="filmstripLocalVideoThumbnail" />
                     </div>
-                    <div
-                        className={remoteVideosWrapperClassName}
-                        id="filmstripRemoteVideos"
-                    >
-                        {/*
-                         * XXX This extra video container is needed for
-                         * scrolling thumbnails in Firefox; otherwise, the flex
-                         * thumbnails resize instead of causing overflow.
-                         */}
+                    {this.props._isModerator ? (
                         <div
-                            className={remoteVideoContainerClassName}
-                            id="filmstripRemoteVideosContainer"
-                            style={filmstripRemoteVideosContainerStyle}
+                            className={remoteVideosWrapperClassName}
+                            id="filmstripRemoteVideos"
                         >
-                            <div id="localVideoTileViewContainer" />
+                            {/*
+                             * XXX This extra video container is needed for
+                             * scrolling thumbnails in Firefox; otherwise, the flex
+                             * thumbnails resize instead of causing overflow.
+                             */}
+                            <div
+                                className={remoteVideoContainerClassName}
+                                id="filmstripRemoteVideosContainer"
+                                style={filmstripRemoteVideosContainerStyle}
+                            >
+                                <div id="localVideoTileViewContainer" />
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div id="localVideoTileViewContainer" />
+                    )}
                 </div>
             </div>
         );
@@ -298,11 +301,11 @@ class Filmstrip extends Component<Props> {
  * @returns {Props}
  */
 function _mapStateToProps(state) {
-    const { iAmSipGateway } = state['features/base/config'];
+    const { iAmSipGateway } = state["features/base/config"];
     const toolbarButtons = getToolbarButtons(state);
-    const { visible } = state['features/filmstrip'];
-    const reduceHeight
-        = state['features/toolbox'].visible && toolbarButtons.length;
+    const { visible } = state["features/filmstrip"];
+    const reduceHeight =
+        state["features/toolbox"].visible && toolbarButtons.length;
     const remoteVideosVisible = shouldRemoteVideosBeVisible(state);
     const { isOpen: shiftRight } = state["features/chat"];
     const className = `${remoteVideosVisible ? "" : "hide-videos"} ${
@@ -312,6 +315,7 @@ function _mapStateToProps(state) {
     const { gridDimensions = {}, filmstripWidth } = state[
         "features/filmstrip"
     ].tileViewDimensions;
+    const isModerator = isLocalParticipantModerator(state);
 
     return {
         _className: className,
@@ -320,10 +324,11 @@ function _mapStateToProps(state) {
         _filmstripWidth: filmstripWidth,
         _hideScrollbar: Boolean(iAmSipGateway),
         _hideToolbar: Boolean(iAmSipGateway),
-        _isFilmstripButtonEnabled: isButtonEnabled('filmstrip', state),
+        _isFilmstripButtonEnabled: isButtonEnabled("filmstrip", state),
         _rows: gridDimensions.rows,
         _videosClassName: videosClassName,
         _visible: visible,
+        _isModerator: isModerator,
     };
 }
 

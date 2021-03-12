@@ -9,7 +9,7 @@ class CountDown extends Component {
     componentDidMount() {
         this.interval = setInterval(() => {
             var seconds = moment(
-                "08/03/2021 11:42:00",
+                "11/03/2021 12:26:00",
                 "DD/MM/YYYY hh:mm:ss"
             ).diff(
                 moment(

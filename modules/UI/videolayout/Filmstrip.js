@@ -1,6 +1,9 @@
 /* global $, APP, interfaceConfig */
 
-import { getVerticalFilmstripVisibleAreaWidth, isFilmstripVisible } from '../../../react/features/filmstrip';
+import {
+    getVerticalFilmstripVisibleAreaWidth,
+    isFilmstripVisible,
+} from "../../../react/features/filmstrip";
 
 const Filmstrip = {
     /**
@@ -11,8 +14,11 @@ const Filmstrip = {
         // FIXME Make it more clear the getFilmstripHeight check is used in
         // horizontal film strip mode for calculating how tall large video
         // display should be.
-        if (isFilmstripVisible(APP.store) && !interfaceConfig.VERTICAL_FILMSTRIP) {
-            return $('.filmstrip').outerHeight();
+        if (
+            isFilmstripVisible(APP.store) &&
+            !interfaceConfig.VERTICAL_FILMSTRIP
+        ) {
+            return $(".filmstrip").outerHeight();
         }
 
         return 0;
@@ -24,7 +30,9 @@ const Filmstrip = {
      * @returns {number} - The width of the vertical filmstip if the filmstrip is visible and 0 otherwise.
      */
     getVerticalFilmstripWidth() {
-        return isFilmstripVisible(APP.store) ? getVerticalFilmstripVisibleAreaWidth() : 0;
+        return isFilmstripVisible(APP.store)
+            ? getVerticalFilmstripVisibleAreaWidth()
+            : 0;
     },
 
     /**
@@ -40,21 +48,21 @@ const Filmstrip = {
 
         if (thumbs.localThumb) {
             thumbs.localThumb.css({
-                'padding-top': '',
+                "padding-top": "",
                 height: `${height}px`,
-                'min-height': `${height}px`,
-                'min-width': `${width}px`,
-                width: `${width}px`
+                "min-height": `${height}px`,
+                "min-width": `${width}px`,
+                width: `${width}px`,
             });
         }
 
         if (thumbs.remoteThumbs) {
             thumbs.remoteThumbs.css({
-                'padding-top': '',
+                "padding-top": "",
                 height: `${height}px`,
-                'min-height': `${height}px`,
-                'min-width': `${width}px`,
-                width: `${width}px`
+                "min-height": `${height}px`,
+                "min-width": `${width}px`,
+                width: `${width}px`,
             });
         }
     },
@@ -66,7 +74,10 @@ const Filmstrip = {
      * @param {boolean} forceUpdate
      * @returns {void}
      */
-    resizeThumbnailsForHorizontalView({ local = {}, remote = {} }, forceUpdate = false) {
+    resizeThumbnailsForHorizontalView(
+        { local = {}, remote = {} },
+        forceUpdate = false
+    ) {
         const thumbs = this._getThumbs(!forceUpdate);
 
         if (thumbs.localThumb) {
@@ -74,9 +85,9 @@ const Filmstrip = {
 
             thumbs.localThumb.css({
                 height: `${height}px`,
-                'min-height': `${height}px`,
-                'min-width': `${width}px`,
-                width: `${width}px`
+                "min-height": `${height}px`,
+                "min-width": `${width}px`,
+                width: `${width}px`,
             });
         }
 
@@ -85,9 +96,9 @@ const Filmstrip = {
 
             thumbs.remoteThumbs.css({
                 height: `${height}px`,
-                'min-height': `${height}px`,
-                'min-width': `${width}px`,
-                width: `${width}px`
+                "min-height": `${height}px`,
+                "min-width": `${width}px`,
+                width: `${width}px`,
             });
         }
     },
@@ -101,26 +112,28 @@ const Filmstrip = {
         const thumbs = this._getThumbs(true);
 
         if (thumbs.localThumb) {
-            const heightToWidthPercent = 100 / interfaceConfig.LOCAL_THUMBNAIL_RATIO;
+            const heightToWidthPercent =
+                100 / interfaceConfig.LOCAL_THUMBNAIL_RATIO;
 
             thumbs.localThumb.css({
-                'padding-top': `${heightToWidthPercent}%`,
-                width: '',
-                height: '',
-                'min-width': '',
-                'min-height': ''
+                "padding-top": `${heightToWidthPercent}%`,
+                width: "",
+                height: "",
+                "min-width": "",
+                "min-height": "",
             });
         }
 
         if (thumbs.remoteThumbs) {
-            const heightToWidthPercent = 100 / interfaceConfig.REMOTE_THUMBNAIL_RATIO;
+            const heightToWidthPercent =
+                100 / interfaceConfig.REMOTE_THUMBNAIL_RATIO;
 
             thumbs.remoteThumbs.css({
-                'padding-top': `${heightToWidthPercent}%`,
-                width: '',
-                height: '',
-                'min-width': '',
-                'min-height': ''
+                "padding-top": `${heightToWidthPercent}%`,
+                width: "",
+                height: "",
+                "min-width": "",
+                "min-height": "",
             });
         }
     },
@@ -131,24 +144,24 @@ const Filmstrip = {
      * @returns {object} thumbnails
      */
     _getThumbs(onlyVisible = false) {
-        let selector = 'span';
+        let selector = "span";
 
         if (onlyVisible) {
-            selector += ':visible';
+            selector += ":visible";
         }
 
-        const localThumb = $('#localVideoContainer');
-        const remoteThumbs = $('#filmstripRemoteVideosContainer').children(selector);
+        const localThumb = $("#localVideoContainer");
+        const remoteThumbs = $("#filmstripRemoteVideosContainer").children(
+            selector
+        );
 
         // Exclude the local video container if it has been hidden.
-        if (localThumb.hasClass('hidden')) {
+        if (localThumb.hasClass("hidden")) {
             return { remoteThumbs };
         }
 
-        return { remoteThumbs,
-            localThumb };
-
-    }
+        return { remoteThumbs, localThumb };
+    },
 };
 
 export default Filmstrip;

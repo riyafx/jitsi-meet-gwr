@@ -1,18 +1,22 @@
 // @flow
 
-import { getFeatureFlag, TILE_VIEW_ENABLED } from '../base/flags';
-import { getPinnedParticipant, getParticipantCount } from '../base/participants';
-import { CHAT_SIZE } from '../chat/constants';
+import { getFeatureFlag, TILE_VIEW_ENABLED } from "../base/flags";
+import {
+    getPinnedParticipant,
+    getParticipantCount,
+    isLocalParticipantModerator,
+} from "../base/participants";
+import { CHAT_SIZE } from "../chat/constants";
 import {
     ASPECT_RATIO_BREAKPOINT,
     DEFAULT_MAX_COLUMNS,
     ABSOLUTE_MAX_COLUMNS,
     SINGLE_COLUMN_BREAKPOINT,
-    TWO_COLUMN_BREAKPOINT
-} from '../filmstrip/constants';
-import { isVideoPlaying } from '../shared-video/functions';
+    TWO_COLUMN_BREAKPOINT,
+} from "../filmstrip/constants";
+import { isVideoPlaying } from "../shared-video/functions";
 
-import { LAYOUTS } from './constants';
+import { LAYOUTS } from "./constants";
 
 declare var interfaceConfig: Object;
 
@@ -41,21 +45,25 @@ export function getCurrentLayout(state: Object) {
  * @returns {number}
  */
 export function getMaxColumnCount(state: Object) {
-    const configuredMax = interfaceConfig.TILE_VIEW_MAX_COLUMNS || DEFAULT_MAX_COLUMNS;
-    const { disableResponsiveTiles } = state['features/base/config'];
+    const configuredMax =
+        interfaceConfig.TILE_VIEW_MAX_COLUMNS || DEFAULT_MAX_COLUMNS;
+    const { disableResponsiveTiles } = state["features/base/config"];
 
     if (!disableResponsiveTiles) {
-        const { clientWidth } = state['features/base/responsive-ui'];
+        const { clientWidth } = state["features/base/responsive-ui"];
         let availableWidth = clientWidth;
         const participantCount = getParticipantCount(state);
-        const { isOpen } = state['features/chat'];
+        const { isOpen } = state["features/chat"];
 
         if (isOpen) {
             availableWidth -= CHAT_SIZE;
         }
 
         // If there are just two participants in a conference, enforce single-column view for mobile size.
-        if (participantCount === 2 && availableWidth < ASPECT_RATIO_BREAKPOINT) {
+        if (
+            participantCount === 2 &&
+            availableWidth < ASPECT_RATIO_BREAKPOINT
+        ) {
             return Math.min(1, Math.max(configuredMax, 1));
         }
 
@@ -89,8 +97,9 @@ export function getTileViewGridDimensions(state: Object) {
 
     // When in tile view mode, we must discount ourselves (the local participant) because our
     // tile is not visible.
-    const { iAmRecorder } = state['features/base/config'];
-    const numberOfParticipants = state['features/base/participants'].length - (iAmRecorder ? 1 : 0);
+    const { iAmRecorder } = state["features/base/config"];
+    const numberOfParticipants =
+        state["features/base/participants"].length - (iAmRecorder ? 1 : 0);
 
     const columnsToMaintainASquare = Math.ceil(Math.sqrt(numberOfParticipants));
     const columns = Math.min(columnsToMaintainASquare, maxColumns);
@@ -99,7 +108,7 @@ export function getTileViewGridDimensions(state: Object) {
 
     return {
         columns,
-        visibleRows
+        visibleRows,
     };
 }
 
@@ -113,7 +122,7 @@ export function getTileViewGridDimensions(state: Object) {
  */
 export function shouldDisplayTileView(state: Object = {}) {
     const participantCount = getParticipantCount(state);
-
+    const isModerator = isLocalParticipantModerator(state);
     // In case of a lonely meeting, we don't allow tile view.
     // But it's a special case too, as we don't even render the button,
     // see TileViewButton component.
@@ -121,44 +130,43 @@ export function shouldDisplayTileView(state: Object = {}) {
         return false;
     }
 
-    const tileViewEnabledFeatureFlag = getFeatureFlag(state, TILE_VIEW_ENABLED, true);
-    const { disableTileView } = state['features/base/config'];
+    const tileViewEnabledFeatureFlag = getFeatureFlag(
+        state,
+        TILE_VIEW_ENABLED,
+        true
+    );
+    const { disableTileView } = state["features/base/config"];
 
     if (disableTileView || !tileViewEnabledFeatureFlag) {
         return false;
     }
 
-    const { tileViewEnabled } = state['features/video-layout'];
+    const { tileViewEnabled } = state["features/video-layout"];
 
     if (tileViewEnabled !== undefined) {
         // If the user explicitly requested a view mode, we
         // do that.
-        return tileViewEnabled;
+        return isModerator ? tileViewEnabled : false;
     }
 
-    const { iAmRecorder } = state['features/base/config'];
+    const { iAmRecorder } = state["features/base/config"];
 
     // None tile view mode is easier to calculate (no need for many negations), so we do
     // that and negate it only once.
     const shouldDisplayNormalMode = Boolean(
-
         // Reasons for normal mode:
 
         // Editing etherpad
-        state['features/etherpad']?.editing
-
-        // We pinned a participant
-        || getPinnedParticipant(state)
-
-        // It's a 1-on-1 meeting
-        || participantCount < 3
-
-        // There is a shared YouTube video in the meeting
-        || isVideoPlaying(state)
-
-        // We want jibri to use stage view by default
-        || iAmRecorder
+        state["features/etherpad"]?.editing ||
+            // We pinned a participant
+            getPinnedParticipant(state) ||
+            // It's a 1-on-1 meeting
+            participantCount < 3 ||
+            // There is a shared YouTube video in the meeting
+            isVideoPlaying(state) ||
+            // We want jibri to use stage view by default
+            iAmRecorder
     );
 
-    return !shouldDisplayNormalMode;
+    return isModerator ? shouldDisplayNormalMode : false;
 }
