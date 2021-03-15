@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
-const ID = "AKIAWT4FA7FQXBUEQJ3Y";
-const SECRET = "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";
+const ID = "";
+const SECRET = "";
 
 // The name of the bucket that you have created
 const BUCKET_NAME = "gwr-recording";

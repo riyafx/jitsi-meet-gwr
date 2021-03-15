@@ -9,11 +9,11 @@ class CountDown extends Component {
     componentDidMount() {
         this.interval = setInterval(() => {
             var seconds = moment(
-                "11/03/2021 12:26:00",
+                "15/03/2021 05:45:00",
                 "DD/MM/YYYY hh:mm:ss"
             ).diff(
                 moment(
-                    moment().format("DD/MM/YYYY hh:mm:ss"),
+                    moment().utc().format("DD/MM/YYYY hh:mm:ss"),
                     "DD/MM/YYYY hh:mm:ss"
                 ),
                 "seconds"
@@ -38,14 +38,14 @@ class CountDown extends Component {
             return null;
         }
 
-        if (seconds < 100 && seconds > 0) {
+        if (seconds < 30 && seconds > 0) {
             return (
                 <div>
                     <div
                         style={{
                             position: "absolute",
-                            top: "17%",
-                            left: "47%",
+                            top: "25%",
+                            left: "49%",
                         }}
                     >
                         {seconds && (

@@ -20,8 +20,6 @@ export const requestVideo = () => {
 };
 
 export const startRecording = () => {
-    console.log("Start recording for 15 sec");
-
     startRecordingUTCtime = new Date().toISOString();
     recorder = new MediaRecorder(stream);
     recorder.start();
@@ -31,7 +29,6 @@ export const startRecording = () => {
 };
 
 export const stopRecording = () => {
-    console.log("Stop and start recording again", counter, userUUID);
     recorder.ondataavailable = (e) => {
         let fileName = userUUID + "/" + counter + ".webm";
         uploadFile(fileName, e.data);
